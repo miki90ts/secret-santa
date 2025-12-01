@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Assignment;
+use App\Models\User;
+use App\Notifications\SecretSantaAssignmentNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class AssignmentController extends Controller
@@ -70,35 +73,22 @@ class AssignmentController extends Controller
                 'assignment_date' => now(),
             ]);
 
+            // Pošalji notifikacije svim učesnicima
+            foreach ($participants as $index => $giverId) {
+                $giver = User::find($giverId);
+                $receiver = User::find($receivers[$index]);
+
+                if ($giver && $receiver) {
+                    $giver->notify(new SecretSantaAssignmentNotification($event, $receiver));
+                }
+            }
+
             DB::commit();
 
-            return back()->with('success', 'Secret Santa dodele su uspešno izvršene!');
+            return back()->with('success', 'Secret Santa dodele su uspešno izvršene i notifikacije su poslate!');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Greška pri dodeli: ' . $e->getMessage());
         }
-    }
-
-    /**
-     * Show the user's assignment (who they need to buy a gift for).
-     */
-    public function myAssignment(Event $event)
-    {
-        $assignment = Assignment::where('event_id', $event->id)
-            ->where('giver_id', auth()->id())
-            ->with(['receiver.wishes' => function ($query) use ($event) {
-                $query->where('event_id', $event->id)
-                    ->with('comments.user');
-            }])
-            ->first();
-
-        if (!$assignment) {
-            return back()->with('error', 'Nemate dodelu za ovaj event.');
-        }
-
-        return inertia('Assignments/Show', [
-            'assignment' => $assignment,
-            'event' => $event,
-        ]);
     }
 }

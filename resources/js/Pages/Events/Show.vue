@@ -1,7 +1,7 @@
 <script setup>
-import { ref } from 'vue';
-import { Head, Link, router, useForm } from '@inertiajs/vue3';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { ref } from "vue";
+import { Head, Link, router, useForm } from "@inertiajs/vue3";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 const props = defineProps({
     event: Object,
@@ -11,28 +11,40 @@ const props = defineProps({
 });
 
 const form = useForm({
-    description: '',
+    description: "",
     is_satisfied: true,
-    feedback: '',
+    feedback: "",
 });
 
 const makeAssignments = () => {
-    if (confirm(`Da li ste sigurni da želite da izvršite random dodelu za ${props.event.participants_count} učesnika?`)) {
-        router.post(route('assignments.make', props.event.id), {}, {
-            preserveScroll: true,
-        });
+    if (
+        confirm(
+            `Da li ste sigurni da želite da izvršite random dodelu za ${props.event.participants_count} učesnika?`
+        )
+    ) {
+        router.post(
+            route("assignments.make", props.event.id),
+            {},
+            {
+                preserveScroll: true,
+            }
+        );
     }
 };
 
 const registerForEvent = () => {
-    router.post(route('events.register', props.event.id), {}, {
-        preserveScroll: true,
-    });
+    router.post(
+        route("events.register", props.event.id),
+        {},
+        {
+            preserveScroll: true,
+        }
+    );
 };
 
 const unregisterFromEvent = () => {
-    if (confirm('Da li ste sigurni da želite da se odjavite?')) {
-        router.delete(route('events.unregister', props.event.id), {
+    if (confirm("Da li ste sigurni da želite da se odjavite?")) {
+        router.delete(route("events.unregister", props.event.id), {
             preserveScroll: true,
         });
     }
@@ -63,7 +75,9 @@ const unregisterFromEvent = () => {
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center gap-3 mb-4">
-                            <h3 class="text-2xl font-bold">{{ event.name || `Secret Santa ${event.year}` }}</h3>
+                            <h3 class="text-2xl font-bold">
+                                {{ event.name || `Secret Santa ${event.year}` }}
+                            </h3>
                             <span
                                 v-if="event.is_active"
                                 class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full"
@@ -86,19 +100,55 @@ const unregisterFromEvent = () => {
                             <div class="bg-gray-50 p-4 rounded">
                                 <div class="text-sm text-gray-600">Prijave</div>
                                 <div class="text-lg font-semibold">
-                                    {{ event.registration_start ? new Date(event.registration_start).toLocaleDateString('sr-RS') : 'N/A' }}
+                                    {{
+                                        event.registration_start
+                                            ? new Date(
+                                                  event.registration_start
+                                              ).toLocaleDateString("sr-RS")
+                                            : "N/A"
+                                    }}
                                     -
-                                    {{ event.registration_end ? new Date(event.registration_end).toLocaleDateString('sr-RS') : 'N/A' }}
+                                    {{
+                                        event.registration_end
+                                            ? new Date(
+                                                  event.registration_end
+                                              ).toLocaleDateString("sr-RS")
+                                            : "N/A"
+                                    }}
                                 </div>
                             </div>
                             <div class="bg-gray-50 p-4 rounded">
-                                <div class="text-sm text-gray-600">Broj učesnika</div>
-                                <div class="text-lg font-semibold">{{ event.participants?.length || 0 }}</div>
+                                <div class="text-sm text-gray-600">
+                                    Broj učesnika
+                                </div>
+                                <div class="text-lg font-semibold">
+                                    {{ event.participants?.length || 0 }}
+                                </div>
                             </div>
                             <div class="bg-gray-50 p-4 rounded">
-                                <div class="text-sm text-gray-600">Datum dodele</div>
+                                <div class="text-sm text-gray-600">
+                                    Datum izvlačenja
+                                </div>
                                 <div class="text-lg font-semibold">
-                                    {{ event.assignment_date ? new Date(event.assignment_date).toLocaleDateString('sr-RS') : 'Nije izvršena' }}
+                                    {{
+                                        event.assignment_date
+                                            ? new Date(
+                                                  event.assignment_date
+                                              ).toLocaleDateString("sr-RS")
+                                            : "Nije izvršena"
+                                    }}
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded">
+                                <div class="text-sm text-gray-600">
+                                    Datum dodele
+                                </div>
+                                <div class="text-lg font-semibold">
+                                    {{
+                                        new Date(
+                                            event.exchange_date
+                                        ).toLocaleString("sr-RS")
+                                    }}
                                 </div>
                             </div>
                         </div>
@@ -114,7 +164,9 @@ const unregisterFromEvent = () => {
                             </button>
 
                             <button
-                                v-if="userParticipating && !event.assignments_made"
+                                v-if="
+                                    userParticipating && !event.assignments_made
+                                "
                                 @click="unregisterFromEvent"
                                 class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                             >
@@ -129,7 +181,11 @@ const unregisterFromEvent = () => {
                             </span>
 
                             <button
-                                v-if="isAdmin && !event.assignments_made && event.participants?.length >= 2"
+                                v-if="
+                                    isAdmin &&
+                                    !event.assignments_made &&
+                                    event.participants?.length >= 2
+                                "
                                 @click="makeAssignments"
                                 class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
                             >
@@ -137,11 +193,35 @@ const unregisterFromEvent = () => {
                             </button>
 
                             <Link
-                                v-if="event.assignments_made && userParticipating"
+                                v-if="
+                                    event.assignments_made && userParticipating
+                                "
                                 :href="route('assignments.my', event.id)"
                                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                             >
                                 Vidi Kome Kupuješ
+                            </Link>
+
+                            <Link
+                                v-if="
+                                    event.assignments_made && userParticipating //&&
+                                    // event.exchange_date &&
+                                    // new Date() > new Date(event.exchange_date)
+                                "
+                                :href="route('assignments.gift', event.id)"
+                                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                            >
+                                Moj Poklon
+                            </Link>
+
+                            <Link
+                                v-if="
+                                    event.assignments_made && userParticipating
+                                "
+                                :href="route('assignments.feedback', event.id)"
+                                class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded"
+                            >
+                                Feedback o Poklonu
                             </Link>
                         </div>
                     </div>
@@ -150,16 +230,27 @@ const unregisterFromEvent = () => {
                 <!-- Participants List -->
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <h3 class="text-xl font-bold mb-4">Učesnici ({{ event.participants?.length || 0 }})</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <h3 class="text-xl font-bold mb-4">
+                            Učesnici ({{ event.participants?.length || 0 }})
+                        </h3>
+                        <div
+                            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                        >
                             <div
                                 v-for="participant in event.participants"
                                 :key="participant.id"
                                 class="p-3 border rounded-lg"
                             >
-                                <div class="font-semibold">{{ participant.name }}</div>
+                                <div class="font-semibold">
+                                    {{ participant.name }}
+                                </div>
                                 <div class="text-sm text-gray-600">
-                                    Prijavljen: {{ new Date(participant.pivot.registered_at).toLocaleDateString('sr-RS') }}
+                                    Prijavljen:
+                                    {{
+                                        new Date(
+                                            participant.pivot.registered_at
+                                        ).toLocaleDateString("sr-RS")
+                                    }}
                                 </div>
                             </div>
                         </div>
@@ -167,7 +258,10 @@ const unregisterFromEvent = () => {
                 </div>
 
                 <!-- Wishes for this event -->
-                <div v-if="event.wishes && event.wishes.length > 0" class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div
+                    v-if="event.wishes && event.wishes.length > 0"
+                    class="bg-white overflow-hidden shadow-sm sm:rounded-lg"
+                >
                     <div class="p-6">
                         <h3 class="text-xl font-bold mb-4">Želje učesnika</h3>
                         <div class="space-y-4">
@@ -176,25 +270,45 @@ const unregisterFromEvent = () => {
                                 :key="wish.id"
                                 class="p-4 border rounded-lg"
                             >
-                                <h4 class="font-semibold mb-2">{{ wish.user.name }}</h4>
+                                <h4 class="font-semibold mb-2">
+                                    {{ wish.user.name }}
+                                </h4>
                                 <div v-if="wish.want" class="mb-2">
-                                    <span class="text-green-600 font-semibold">Voli:</span>
+                                    <span class="text-green-600 font-semibold"
+                                        >Voli:</span
+                                    >
                                     <p class="text-gray-700">{{ wish.want }}</p>
                                 </div>
                                 <div v-if="wish.does_not_want">
-                                    <span class="text-red-600 font-semibold">Ne voli:</span>
-                                    <p class="text-gray-700">{{ wish.does_not_want }}</p>
+                                    <span class="text-red-600 font-semibold"
+                                        >Ne voli:</span
+                                    >
+                                    <p class="text-gray-700">
+                                        {{ wish.does_not_want }}
+                                    </p>
                                 </div>
 
                                 <!-- Comments -->
-                                <div v-if="wish.comments && wish.comments.length > 0" class="mt-3 space-y-2">
-                                    <div class="text-sm font-semibold text-gray-600">Sugestije:</div>
+                                <div
+                                    v-if="
+                                        wish.comments &&
+                                        wish.comments.length > 0
+                                    "
+                                    class="mt-3 space-y-2"
+                                >
+                                    <div
+                                        class="text-sm font-semibold text-gray-600"
+                                    >
+                                        Sugestije:
+                                    </div>
                                     <div
                                         v-for="comment in wish.comments"
                                         :key="comment.id"
                                         class="text-sm bg-gray-50 p-2 rounded"
                                     >
-                                        <span class="font-semibold">{{ comment.user.name }}:</span>
+                                        <span class="font-semibold"
+                                            >{{ comment.user.name }}:</span
+                                        >
                                         {{ comment.title }}
                                     </div>
                                 </div>

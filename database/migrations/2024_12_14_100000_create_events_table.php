@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('events', function (Blueprint $table) {
             $table->id();
             $table->year('year')->unique();
-            $table->string('name')->nullable(); // npr. "Secret Santa 2024"
+            $table->string('name')->nullable();
             $table->text('description')->nullable();
             $table->date('registration_start')->nullable();
             $table->date('registration_end')->nullable();
-            $table->date('assignment_date')->nullable(); // kada je izvršena dodela
-            $table->boolean('is_active')->default(false); // aktivna godina
+            $table->date('assignment_date')->nullable();
+            $table->boolean('is_active')->default(false);
             $table->boolean('assignments_made')->default(false);
             $table->timestamps();
         });

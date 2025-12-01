@@ -2,32 +2,36 @@
 import { Head, Link, useForm } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
+const props = defineProps({
+    event: Object,
+});
+
 const form = useForm({
-    year: new Date().getFullYear(),
-    name: "",
-    description: "",
-    registration_start: "",
-    registration_end: "",
-    exchange_date: "",
-    is_active: false,
+    year: props.event.year,
+    name: props.event.name || "",
+    description: props.event.description || "",
+    registration_start: props.event.registration_start || "",
+    registration_end: props.event.registration_end || "",
+    exchange_date: props.event.exchange_date || "",
+    is_active: props.event.is_active,
 });
 
 const submit = () => {
-    form.post(route("events.store"));
+    form.patch(route("events.update", props.event.id));
 };
 </script>
 
 <template>
-    <Head title="Kreiraj Događaj" />
+    <Head title="Ažuriraj Događaj" />
 
     <AuthenticatedLayout>
         <template #header>
             <div class="flex justify-between items-center">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Kreiraj Novi Secret Santa Događaj
+                    Ažuriraj {{ event.name || `Secret Santa ${event.year}` }}
                 </h2>
                 <Link
-                    :href="route('events.index')"
+                    :href="route('events.show', event.id)"
                     class="text-gray-600 hover:text-gray-900"
                 >
                     ← Nazad
@@ -203,7 +207,7 @@ const submit = () => {
                                     :disabled="form.processing"
                                     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
                                 >
-                                    Kreiraj Događaj
+                                    Ažuriraj Događaj
                                 </button>
                             </div>
                         </form>

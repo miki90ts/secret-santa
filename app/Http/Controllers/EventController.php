@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Http\Requests\StoreEventRequest;
+use App\Http\Requests\UpdateEventRequest;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -41,18 +43,9 @@ class EventController extends Controller
     /**
      * Store a newly created event.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(StoreEventRequest $request): RedirectResponse
     {
-        $this->authorize('create', Event::class);
-
-        $validated = $request->validate([
-            'year' => 'required|integer|unique:events,year',
-            'name' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'registration_start' => 'nullable|date',
-            'registration_end' => 'nullable|date|after:registration_start',
-            'is_active' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
         // Deaktiviraj sve druge evente ako je novi aktivan
         if ($validated['is_active'] ?? false) {
@@ -97,18 +90,9 @@ class EventController extends Controller
     /**
      * Update the specified event.
      */
-    public function update(Request $request, Event $event): RedirectResponse
+    public function update(UpdateEventRequest $request, Event $event): RedirectResponse
     {
-        $this->authorize('update', $event);
-
-        $validated = $request->validate([
-            'year' => 'required|integer|unique:events,year,' . $event->id,
-            'name' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'registration_start' => 'nullable|date',
-            'registration_end' => 'nullable|date|after:registration_start',
-            'is_active' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
         // Deaktiviraj sve druge evente ako je ovaj aktivan
         if ($validated['is_active'] ?? false) {

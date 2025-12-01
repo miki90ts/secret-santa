@@ -1,11 +1,11 @@
-import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
-import vue from '@vitejs/plugin-vue';
+import { defineConfig } from "vite";
+import laravel from "laravel-vite-plugin";
+import vue from "@vitejs/plugin-vue";
 
 export default defineConfig({
     plugins: [
         laravel({
-            input: 'resources/js/app.js',
+            input: "resources/js/app.js",
             refresh: true,
         }),
         vue({
@@ -16,13 +16,12 @@ export default defineConfig({
                 },
             },
         }),
-       
     ],
     server: {
-        host: '10.10.2.152', // Vaša lokalna IP adresa
-        port: 3000,          // Port za Vite (možete promeniti ako želite)
+        host: "localhost", // Vaša lokalna IP adresa
+        port: 3000, // Port za Vite (možete promeniti ako želite)
         hmr: {
-            host: '10.10.2.152', // Potrebno za Hot Module Replacement
+            host: "localhost", // Potrebno za Hot Module Replacement
         },
     },
 });

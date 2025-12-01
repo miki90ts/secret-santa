@@ -18,6 +18,7 @@ class Event extends Model
         'registration_start',
         'registration_end',
         'assignment_date',
+        'exchange_date',
         'is_active',
         'assignments_made',
     ];
@@ -27,6 +28,7 @@ class Event extends Model
         'registration_start' => 'date',
         'registration_end' => 'date',
         'assignment_date' => 'date',
+        'exchange_date' => 'datetime',
         'is_active' => 'boolean',
         'assignments_made' => 'boolean',
     ];

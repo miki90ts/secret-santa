@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Wish extends Model
@@ -27,10 +26,5 @@ class Wish extends Model
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
-    }
-
-    public function comments(): HasMany
-    {
-        return $this->hasMany(Comment::class);
     }
 }

@@ -11,6 +11,9 @@ use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\GiftController;
 use App\Http\Controllers\RegisterEventController;
 use App\Http\Controllers\UnregisterEventController;
+use App\Http\Controllers\ShowMyAssignmentController;
+use App\Http\Controllers\ShowMyGiftController;
+use App\Http\Controllers\ShowGiftFeedbackController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -45,7 +48,9 @@ Route::middleware('auth')->group(function () {
 
     // Assignment routes
     Route::post('/events/{event}/assignments', [AssignmentController::class, 'makeAssignments'])->name('assignments.make');
-    Route::get('/events/{event}/my-assignment', [AssignmentController::class, 'myAssignment'])->name('assignments.my');
+    Route::get('/events/{event}/my-assignment', ShowMyAssignmentController::class)->name('assignments.my');
+    Route::get('/events/{event}/my-gift', ShowMyGiftController::class)->name('assignments.gift');
+    Route::get('/events/{event}/gift-feedback', ShowGiftFeedbackController::class)->name('assignments.feedback');
 
     // Gift routes
     Route::post('/assignments/{assignment}/gift', [GiftController::class, 'store'])->name('gifts.store');
