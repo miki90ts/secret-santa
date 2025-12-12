@@ -67,10 +67,17 @@ const props = defineProps({
                                 </NavLink>
                                 <NavLink
                                     class="border-0"
+                                    :href="route('events.show', activeEvent.id)"
+                                    :active="route().current('events.show')"
+                                >
+                                    Aktivan Događaj {{ activeEvent ? `(${activeEvent.year} Aktivan)` : '' }}
+                                </NavLink>
+                                <NavLink
+                                    class="border-0"
                                     :href="route('events.index')"
                                     :active="route().current('events.index')"
                                 >
-                                    Dogadjaji {{ props.activeEvent ? `(${props.activeEvent.year} Aktivan)` : '' }}
+                                    Događaji 
                                 </NavLink>
                             </div>
                         </div>

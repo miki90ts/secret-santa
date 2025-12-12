@@ -18,10 +18,10 @@ export default defineConfig({
         }),
     ],
     server: {
-        host: "localhost", // Vaša lokalna IP adresa
+        host: "10.10.2.152", // Vaša lokalna IP adresa
         port: 3000, // Port za Vite (možete promeniti ako želite)
         hmr: {
-            host: "localhost", // Potrebno za Hot Module Replacement
+            host: "10.10.2.152", // Potrebno za Hot Module Replacement
         },
     },
 });

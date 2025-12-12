@@ -13,12 +13,12 @@ const props = defineProps({
     <AuthenticatedLayout>
         <template #header>
             <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                     Moja Istorija Želja
                 </h2>
                 <Link
                     :href="route('dashboard')"
-                    class="text-gray-600 hover:text-gray-900"
+                    class="text-gray-600 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white"
                 >
                     ← Nazad na Dashboard
                 </Link>

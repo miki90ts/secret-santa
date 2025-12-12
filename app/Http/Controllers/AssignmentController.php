@@ -37,7 +37,7 @@ class AssignmentController extends Controller
             $receivers = $participants;
 
             // Mešaj dok ne dobiješ validnu permutaciju (niko ne može sam sebi)
-            $maxAttempts = 100;
+            $maxAttempts = 200;
             $attempt = 0;
 
             do {

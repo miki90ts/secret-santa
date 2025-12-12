@@ -27,12 +27,12 @@ const submit = () => {
     <AuthenticatedLayout>
         <template #header>
             <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                     Ažuriraj {{ event.name || `Secret Santa ${event.year}` }}
                 </h2>
                 <Link
                     :href="route('events.show', event.id)"
-                    class="text-gray-600 hover:text-gray-900"
+                    class="text-gray-600 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white"
                 >
                     ← Nazad
                 </Link>

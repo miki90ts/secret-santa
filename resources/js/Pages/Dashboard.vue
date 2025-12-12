@@ -231,7 +231,7 @@ const closeCommentModal = () => {
     <AuthenticatedLayout :active-event="props.activeEvent">
         <template #header>
             <h2
-                class="text-xl font-semibold leading-tight text-gray-800 text-center"
+                class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200 text-center"
                 style="font-family: Lobster"
             >
                 Lista želja i nepoželjnih poklona – olakšaj svom tajnom Deda
@@ -256,7 +256,7 @@ const closeCommentModal = () => {
                             prvo se prijavite za aktivan Secret Santa događaj.
                         </p>
                         <a 
-                            :href="route('events.index')" 
+                            :href="route('events.show', activeEvent.id)" 
                             class="inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg"
                         >
                             🎅 Prijavi se za Secret Santa

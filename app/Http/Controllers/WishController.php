@@ -26,7 +26,7 @@ class WishController extends Controller
             'participants.received_comments.user',
         ]);
         return inertia()->render('Dashboard', [
-            'users' => $activeEvent ? UserResource::collection($activeEvent->participants) : [],
+            'users' => $activeEvent ? UserResource::collection($activeEvent->participants->sortBy('name')) : [],
             'activeEvent' => $activeEvent,
         ]);
     }

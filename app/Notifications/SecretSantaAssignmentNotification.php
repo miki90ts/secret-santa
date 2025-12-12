@@ -43,7 +43,7 @@ class SecretSantaAssignmentNotification extends Notification implements ShouldQu
         $assignmentUrl = route('assignments.my', $this->event->id);
 
         return (new MailMessage)
-            ->subject('🎅 Vaša Secret Santa dodela za ' . $this->event->name)
+            ->subject('Vaša Secret Santa dodela za ' . $this->event->name)
             ->view('emails.secret-santa-assignment', [
                 'giver' => $notifiable,
                 'receiver' => $this->receiver,

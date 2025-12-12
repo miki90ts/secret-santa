@@ -54,15 +54,15 @@ const unregisterFromEvent = () => {
 <template>
     <Head :title="`Secret Santa ${event.year}`" />
 
-    <AuthenticatedLayout>
+    <AuthenticatedLayout :active-event="props.event">
         <template #header>
             <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                     {{ event.name || `Secret Santa ${event.year}` }}
                 </h2>
                 <Link
                     :href="route('events.index')"
-                    class="text-gray-600 hover:text-gray-900"
+                    class="text-gray-600 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white"
                 >
                     ← Nazad na listu
                 </Link>
@@ -204,9 +204,9 @@ const unregisterFromEvent = () => {
 
                             <Link
                                 v-if="
-                                    event.assignments_made && userParticipating //&&
-                                    // event.exchange_date &&
-                                    // new Date() > new Date(event.exchange_date)
+                                    event.assignments_made && userParticipating &&
+                                    event.exchange_date &&
+                                    new Date() > new Date(event.exchange_date)
                                 "
                                 :href="route('assignments.gift', event.id)"
                                 class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
@@ -216,7 +216,9 @@ const unregisterFromEvent = () => {
 
                             <Link
                                 v-if="
-                                    event.assignments_made && userParticipating
+                                    event.assignments_made && userParticipating &&
+                                    event.exchange_date &&
+                                    new Date() > new Date(event.exchange_date)
                                 "
                                 :href="route('assignments.feedback', event.id)"
                                 class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded"

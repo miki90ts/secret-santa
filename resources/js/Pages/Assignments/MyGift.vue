@@ -23,15 +23,15 @@ const submitGift = () => {
 <template>
     <Head title="Moj Poklon" />
 
-    <AuthenticatedLayout>
+    <AuthenticatedLayout :active-event="event">
         <template #header>
             <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                     Moj Secret Santa Poklon
                 </h2>
                 <Link
                     :href="route('events.show', event.id)"
-                    class="text-gray-600 hover:text-gray-900"
+                    class="text-gray-600 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white"
                 >
                     ← Nazad na događaj
                 </Link>
