@@ -2,7 +2,14 @@
 import { Head, Link, useForm } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
+const props = defineProps({
+    userOrganizations: Array,
+    organization: Object,
+});
+
 const form = useForm({
+    organization_id:
+        props.organization?.id || props.userOrganizations?.[0]?.id || "",
     year: new Date().getFullYear(),
     name: "",
     description: "",
@@ -23,7 +30,9 @@ const submit = () => {
     <AuthenticatedLayout>
         <template #header>
             <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                <h2
+                    class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight"
+                >
                     Kreiraj Novi Secret Santa Događaj
                 </h2>
                 <Link
@@ -40,6 +49,40 @@ const submit = () => {
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <form @submit.prevent="submit" class="space-y-6">
+                            <!-- Organization Selection -->
+                            <div>
+                                <label
+                                    for="organization_id"
+                                    class="block text-sm font-medium text-gray-700"
+                                >
+                                    Organizacija *
+                                </label>
+                                <select
+                                    id="organization_id"
+                                    v-model="form.organization_id"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    required
+                                    :disabled="organization != null"
+                                >
+                                    <option value="" disabled>
+                                        Izaberite organizaciju
+                                    </option>
+                                    <option
+                                        v-for="org in userOrganizations"
+                                        :key="org.id"
+                                        :value="org.id"
+                                    >
+                                        {{ org.name }}
+                                    </option>
+                                </select>
+                                <div
+                                    v-if="form.errors.organization_id"
+                                    class="text-red-600 text-sm mt-1"
+                                >
+                                    {{ form.errors.organization_id }}
+                                </div>
+                            </div>
+
                             <!-- Year -->
                             <div>
                                 <label
@@ -193,7 +236,8 @@ const submit = () => {
                             </div>
                             <p class="text-sm text-gray-600">
                                 Napomena: Aktiviranjem ovog događaja, svi drugi
-                                događaji će biti deaktivirani.
+                                događaji u ovoj organizaciji će biti
+                                deaktivirani.
                             </p>
 
                             <!-- Submit Button -->

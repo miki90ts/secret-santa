@@ -63,21 +63,34 @@ const props = defineProps({
                                     :href="route('dashboard')"
                                     :active="route().current('dashboard')"
                                 >
-                                    Mega's Secret Santa
+                                    Secret Santa
                                 </NavLink>
                                 <NavLink
+                                    v-if="activeEvent"
                                     class="border-0"
                                     :href="route('events.show', activeEvent.id)"
                                     :active="route().current('events.show')"
                                 >
-                                    Aktivan Događaj {{ activeEvent ? `(${activeEvent.year} Aktivan)` : '' }}
+                                    Aktivan Event
+                                    {{
+                                        activeEvent
+                                            ? `(${activeEvent.year})`
+                                            : ""
+                                    }}
                                 </NavLink>
                                 <NavLink
                                     class="border-0"
                                     :href="route('events.index')"
                                     :active="route().current('events.index')"
                                 >
-                                    Događaji 
+                                    Događaji
+                                </NavLink>
+                                <NavLink
+                                    class="border-0"
+                                    :href="route('organizations.index')"
+                                    :active="route().current('organizations.*')"
+                                >
+                                    Organizacije 🏢
                                 </NavLink>
                             </div>
                         </div>

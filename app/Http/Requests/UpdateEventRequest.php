@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateEventRequest extends FormRequest
@@ -24,8 +25,19 @@ class UpdateEventRequest extends FormRequest
         $event = $this->route('event');
 
         return [
-            'year' => 'required|integer|unique:events,year,' . $event->id,
+            'year' => [
+                'required',
+                'integer',
+                Rule::unique('events')->where(function ($query) use ($event) {
+                    return $query->where('organization_id', $event->organization_id);
+                })->ignore($event->id),
+            ],
             'name' => 'nullable|string|max:255',
+            'slug' => [
+                'nullable',
+                'string',
+                Rule::unique('events')->ignore($event->id),
+            ],
             'description' => 'nullable|string',
             'registration_start' => 'nullable|date',
             'registration_end' => 'nullable|date|after:registration_start',

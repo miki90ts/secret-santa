@@ -211,19 +211,19 @@ const closeCommentModal = () => {
 </script>
 
 <template>
-    <WishModal 
-        :show="editingWish" 
-        :wish="currentWish" 
+    <WishModal
+        :show="editingWish"
+        :wish="currentWish"
         :event-id="activeEvent?.id"
-        @close="closeWishModal" 
+        @close="closeWishModal"
     />
 
-    <CommentModal 
-        :show="editingComment" 
+    <CommentModal
+        :show="editingComment"
         :comments="currentComments"
         :event-id="activeEvent?.id"
         :receiver-id="currentReceiverId"
-        @close="closeCommentModal" 
+        @close="closeCommentModal"
     />
 
     <Head title="Mega" />
@@ -239,24 +239,39 @@ const closeCommentModal = () => {
             </h2>
         </template>
 
-        <div v-if="!props.users.some(user => user.id === logedUser.id)" class="py-12">
+        <div
+            v-if="!props.users.some((user) => user.id === logedUser.id)"
+            class="py-12"
+        >
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-center">
                         <div class="mb-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-24 h-24 mx-auto text-gray-400">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.5"
+                                stroke="currentColor"
+                                class="w-24 h-24 mx-auto text-gray-400"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"
+                                />
                             </svg>
                         </div>
                         <h3 class="text-2xl font-bold text-gray-800 mb-4">
                             Niste prijavljeni za Secret Santa događaj
                         </h3>
                         <p class="text-gray-600 mb-6">
-                            Da biste videli listu želja i učestvovali u razmeni poklona, 
-                            prvo se prijavite za aktivan Secret Santa događaj.
+                            Da biste videli listu želja i učestvovali u razmeni
+                            poklona, prvo se prijavite za aktivan Secret Santa
+                            događaj.
                         </p>
-                        <a 
-                            :href="route('events.show', activeEvent.id)" 
+                        <a
+                            :href="route('events.show', activeEvent.id)"
                             class="inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg"
                         >
                             🎅 Prijavi se za Secret Santa
@@ -376,7 +391,7 @@ const closeCommentModal = () => {
                         class="hover:bg-gray-100"
                     >
                         <td class="px-6 py-4 text-sm text-black font-black">
-                            {{ user.name }} 
+                            {{ user.name }}
                         </td>
                         <td class="px-6 py-4 text-sm text-green-500 font-black">
                             {{ user.wishes[0]?.want }}
@@ -409,10 +424,12 @@ const closeCommentModal = () => {
                                     </svg>
 
                                     <span
-                                        v-if="user.received_comments?.length > 0"
+                                        v-if="
+                                            user.received_comments?.length > 0
+                                        "
                                         class="absolute top-0 right-0 bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full"
                                     >
-                                       {{ user.received_comments?.length }} 
+                                        {{ user.received_comments?.length }}
                                     </span>
                                 </div>
                             </button>
@@ -425,7 +442,7 @@ const closeCommentModal = () => {
                                 class="text-blue-500 hover:underline font-black"
                                 @click="editWish(user.wishes[0])"
                             >
-                                Unos 
+                                Unos
                             </button>
                         </td>
                     </tr>

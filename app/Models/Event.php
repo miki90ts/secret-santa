@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Event extends Model
@@ -12,8 +14,10 @@ class Event extends Model
     use HasFactory;
 
     protected $fillable = [
+        'organization_id',
         'year',
         'name',
+        'slug',
         'description',
         'registration_start',
         'registration_end',
@@ -32,6 +36,23 @@ class Event extends Model
         'is_active' => 'boolean',
         'assignments_made' => 'boolean',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($event) {
+            if (empty($event->slug)) {
+                $base = Str::slug($event->name ?? 'event-' . $event->year);
+                $event->slug = $base . '-' . Str::random(6);
+            }
+        });
+    }
+
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class);
+    }
 
     public function participants(): BelongsToMany
     {

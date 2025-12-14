@@ -20,7 +20,9 @@ class EventPolicy
      */
     public function view(User $user, Event $event): bool
     {
-        return true;
+        // Može videti ako je član organizacije, ili global admin
+        return  $event->organization->isMember($user)
+            || $user->is_admin;
     }
 
     /**
@@ -28,7 +30,8 @@ class EventPolicy
      */
     public function create(User $user): bool
     {
-        return $user->is_admin;
+        // Može kreirati ako je global admin ili admin bar jedne organizacije
+        return $user->is_admin || $user->organizations()->wherePivot('role', 'admin')->exists();
     }
 
     /**
@@ -36,7 +39,7 @@ class EventPolicy
      */
     public function update(User $user, Event $event): bool
     {
-        return $user->is_admin;
+        return $user->is_admin || $event->organization->isAdmin($user);
     }
 
     /**
@@ -44,7 +47,7 @@ class EventPolicy
      */
     public function delete(User $user, Event $event): bool
     {
-        return $user->is_admin;
+        return $user->is_admin || $event->organization->isAdmin($user);
     }
 
     /**
@@ -52,7 +55,8 @@ class EventPolicy
      */
     public function makeAssignments(User $user, Event $event): bool
     {
-        return $user->is_admin && $event->canMakeAssignments();
+        return ($user->is_admin || $event->organization->isAdmin($user))
+            && $event->canMakeAssignments();
     }
 
     /**
@@ -60,6 +64,14 @@ class EventPolicy
      */
     public function register(User $user, Event $event): bool
     {
-        return $event->isRegistrationOpen() && !$user->isParticipantInEvent($event);
+        // Može se registrovati ako je:
+        // - član organizacije
+        // - Registracija je otvorena
+        // - Nije već prijavljen
+        $canAccess = $event->organization->isMember($user);
+
+        return $canAccess
+            && $event->isRegistrationOpen()
+            && !$user->isParticipantInEvent($event);
     }
 }

@@ -83,8 +83,34 @@ class User extends Authenticatable
         return $this->hasMany(Comment::class, 'receiver_id');
     }
 
+    public function organizations(): BelongsToMany
+    {
+        return $this->belongsToMany(Organization::class, 'organization_members')
+            ->withPivot('role', 'joined_at')
+            ->withTimestamps();
+    }
+
+    public function ownedOrganizations(): HasMany
+    {
+        return $this->hasMany(Organization::class, 'owner_id');
+    }
+
     public function isParticipantInEvent(Event $event): bool
     {
         return $this->events()->where('event_id', $event->id)->exists();
+    }
+
+    public function isMemberOfOrganization(Organization $organization): bool
+    {
+        return $this->organizations()->where('organization_id', $organization->id)->exists();
+    }
+
+    public function isAdminOfOrganization(Organization $organization): bool
+    {
+        return $organization->owner_id === $this->id ||
+            $this->organizations()
+            ->wherePivot('organization_id', $organization->id)
+            ->wherePivot('role', 'admin')
+            ->exists();
     }
 }

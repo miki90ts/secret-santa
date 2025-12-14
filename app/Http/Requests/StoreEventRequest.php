@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreEventRequest extends FormRequest
@@ -22,13 +23,21 @@ class StoreEventRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'year' => 'required|integer|unique:events,year',
-            'name' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'registration_start' => 'nullable|date',
-            'registration_end' => 'nullable|date|after:registration_start',
-            'exchange_date' => 'nullable|date',
-            'is_active' => 'boolean',
+            'organization_id' => ['required', 'exists:organizations,id'],
+            'year' => [
+                'required',
+                'integer',
+                Rule::unique('events')->where(function ($query) {
+                    return $query->where('organization_id', $this->organization_id);
+                }),
+            ],
+            'name' => ['nullable', 'string', 'max:255'],
+            'slug' => ['nullable', 'string', 'unique:events,slug'],
+            'description' => ['nullable', 'string'],
+            'registration_start' => ['nullable', 'date'],
+            'registration_end' => ['nullable', 'date', 'after:registration_start'],
+            'exchange_date' => ['nullable', 'date'],
+            'is_active' => ['boolean'],
         ];
     }
 
@@ -40,9 +49,12 @@ class StoreEventRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'organization_id.required' => 'Organizacija je obavezna.',
+            'organization_id.exists' => 'Izabrana organizacija ne postoji.',
             'year.required' => 'Godina je obavezna.',
             'year.integer' => 'Godina mora biti broj.',
-            'year.unique' => 'Event za ovu godinu već postoji.',
+            'year.unique' => 'Event za ovu godinu već postoji u ovoj organizaciji.',
+            'slug.unique' => 'Ovaj slug već postoji.',
             'name.max' => 'Naziv ne može biti duži od 255 karaktera.',
             'registration_end.after' => 'Datum kraja prijava mora biti nakon datuma početka prijava.',
         ];

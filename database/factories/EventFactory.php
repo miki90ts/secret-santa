@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Event;
+use App\Models\Organization;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,10 +22,13 @@ class EventFactory extends Factory
     public function definition(): array
     {
         $year = fake()->numberBetween(2024, 2026);
+        $name = "Secret Santa {$year}";
 
         return [
+            'organization_id' => Organization::factory(),
             'year' => $year,
-            'name' => "Secret Santa {$year}",
+            'name' => $name,
+            'slug' => Str::slug($name) . '-' . Str::random(6),
             'description' => fake()->sentence(),
             'registration_start' => now()->startOfYear()->addMonths(10),
             'registration_end' => now()->startOfYear()->addMonths(11),

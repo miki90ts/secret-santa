@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Organization;
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use Illuminate\Http\Request;
@@ -15,29 +16,69 @@ class EventController extends Controller
 {
     use AuthorizesRequests;
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $events = Event::withCount('participants')
-            ->orderBy('year', 'desc')
-            ->get();
+        $user = auth()->user();
 
-        $activeEvent = Event::withCount('participants')->where('is_active', true)->first();
+        // Ako je admin, vidi sve evente
+        // Ako nije, vidi samo evente organizacija kojima pripada
+        if ($user->is_admin) {
+            $events = Event::with('organization')
+                ->withCount('participants')
+                ->orderBy('year', 'desc')
+                ->get();
+        } else {
+            $organizationIds = $user->organizations()->pluck('organizations.id');
+            $events = Event::with('organization')
+                ->whereIn('organization_id', $organizationIds)
+                ->withCount('participants')
+                ->orderBy('year', 'desc')
+                ->get();
+        }
+
+        // Filtriraj po organizaciji ako je prosleđeno
+        if ($request->has('organization_id')) {
+            $events = $events->where('organization_id', $request->organization_id);
+        }
+
+        $activeEvent = $events->firstWhere('is_active', true);
 
         return Inertia::render('Events/Index', [
             'events' => $events,
             'activeEvent' => $activeEvent,
-            'isAdmin' => auth()->user()->is_admin,
+            'isAdmin' => $user->is_admin,
+            'userOrganizations' => $user->organizations,
         ]);
     }
 
     /**
      * Show the form for creating a new event.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
         $this->authorize('create', Event::class);
 
-        return Inertia::render('Events/Create');
+        // Ako je prosleđeno organization_id, proveri pristup
+        $organizationId = $request->get('organization_id');
+        $organization = null;
+
+        if ($organizationId) {
+            $organization = Organization::findOrFail($organizationId);
+            // Proveri da li je korisnik admin organizacije
+            if (!$organization->isAdmin(auth()->user())) {
+                abort(403, 'Nemate pristup kreirati event za ovu organizaciju.');
+            }
+        }
+
+        $userOrganizations = auth()->user()->organizations()
+            ->wherePivot('role', 'admin')
+            ->orWhere('owner_id', auth()->id())
+            ->get();
+
+        return Inertia::render('Events/Create', [
+            'organization' => $organization,
+            'userOrganizations' => $userOrganizations,
+        ]);
     }
 
     /**
@@ -47,9 +88,17 @@ class EventController extends Controller
     {
         $validated = $request->validated();
 
-        // Deaktiviraj sve druge evente ako je novi aktivan
+        // Proveri pristup za organizaciju
+        $organization = Organization::findOrFail($validated['organization_id']);
+        if (!$organization->isAdmin(auth()->user())) {
+            abort(403, 'Nemate pristup kreirati event za ovu organizaciju.');
+        }
+
+        // Deaktiviraj sve druge evente u istoj organizaciji ako je novi aktivan
         if ($validated['is_active'] ?? false) {
-            Event::where('is_active', true)->update(['is_active' => false]);
+            Event::where('organization_id', $organization->id)
+                ->where('is_active', true)
+                ->update(['is_active' => false]);
         }
 
         Event::create($validated);
@@ -63,15 +112,23 @@ class EventController extends Controller
      */
     public function show(Event $event): Response
     {
-        $event->load(['participants', 'wishes.user']);
+        // Proveri pristup (mora biti član organizacije ili event public)
+        $user = auth()->user();
+        if (!$event->organization->isMember($user) && !$user->is_admin) {
+            abort(403, 'Nemate pristup ovom eventu.');
+        }
 
-        $userParticipating = auth()->user()->isParticipantInEvent($event);
+        $event->load(['organization', 'participants', 'wishes.user']);
+
+        $userParticipating = $user->isParticipantInEvent($event);
+        $isOrgAdmin = $event->organization->isAdmin($user);
 
         return Inertia::render('Events/Show', [
             'event' => $event,
             'userParticipating' => $userParticipating,
-            'canRegister' => auth()->user()->can('register', $event),
-            'isAdmin' => auth()->user()->is_admin,
+            'canRegister' => $user->can('register', $event),
+            'isAdmin' => $user->is_admin,
+            'isOrgAdmin' => $isOrgAdmin,
         ]);
     }
 
@@ -82,8 +139,14 @@ class EventController extends Controller
     {
         $this->authorize('update', $event);
 
+        $userOrganizations = auth()->user()->organizations()
+            ->wherePivot('role', 'admin')
+            ->orWhere('owner_id', auth()->id())
+            ->get();
+
         return Inertia::render('Events/Edit', [
-            'event' => $event,
+            'event' => $event->load('organization'),
+            'userOrganizations' => $userOrganizations,
         ]);
     }
 
@@ -94,9 +157,10 @@ class EventController extends Controller
     {
         $validated = $request->validated();
 
-        // Deaktiviraj sve druge evente ako je ovaj aktivan
+        // Deaktiviraj sve druge evente u istoj organizaciji ako je ovaj aktivan
         if ($validated['is_active'] ?? false) {
-            Event::where('id', '!=', $event->id)
+            Event::where('organization_id', $event->organization_id)
+                ->where('id', '!=', $event->id)
                 ->where('is_active', true)
                 ->update(['is_active' => false]);
         }

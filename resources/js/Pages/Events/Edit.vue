@@ -4,9 +4,11 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 const props = defineProps({
     event: Object,
+    userOrganizations: Array,
 });
 
 const form = useForm({
+    organization_id: props.event.organization_id,
     year: props.event.year,
     name: props.event.name || "",
     description: props.event.description || "",
@@ -27,7 +29,9 @@ const submit = () => {
     <AuthenticatedLayout>
         <template #header>
             <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                <h2
+                    class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight"
+                >
                     Ažuriraj {{ event.name || `Secret Santa ${event.year}` }}
                 </h2>
                 <Link
@@ -44,6 +48,28 @@ const submit = () => {
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <form @submit.prevent="submit" class="space-y-6">
+                            <!-- Organization (read-only) -->
+                            <div>
+                                <label
+                                    for="organization"
+                                    class="block text-sm font-medium text-gray-700"
+                                >
+                                    Organizacija
+                                </label>
+                                <input
+                                    id="organization"
+                                    :value="event.organization.name"
+                                    type="text"
+                                    class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm"
+                                    readonly
+                                    disabled
+                                />
+                                <p class="text-xs text-gray-500 mt-1">
+                                    Organizacija se ne može menjati nakon
+                                    kreiranja
+                                </p>
+                            </div>
+
                             <!-- Year -->
                             <div>
                                 <label
@@ -197,7 +223,8 @@ const submit = () => {
                             </div>
                             <p class="text-sm text-gray-600">
                                 Napomena: Aktiviranjem ovog događaja, svi drugi
-                                događaji će biti deaktivirani.
+                                događaji u ovoj organizaciji će biti
+                                deaktivirani.
                             </p>
 
                             <!-- Submit Button -->
